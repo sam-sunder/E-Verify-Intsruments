@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'field_verification_repository.dart';
+
+class FieldVerificationProvider extends ChangeNotifier {
+  final FieldVerificationRepository _repository;
+  FieldVerificationModel? _verification;
+
+  // Step 1: Pre-check State
+  Map<String, bool> _preCheckStatus = {};
+  String? _locationConfirmation;
+  String? _serialConfirmation;
+
+  // Step 2: Measurements State
+  List<MeasurementModel> _measurements = [];
+
+  // Step 3: Evidence State
+  List<EvidencePhotoModel> _evidencePhotos = [];
+
+  // Step 4: Outcome State
+  String? _resultStatus;
+  String _findingsSummary = '';
+  String _remarks = '';
+  bool _isCompliant = false;
+  bool _certificateEligible = false;
+
+  FieldVerificationProvider(this._repository);
+
+  FieldVerificationModel? get verification => _verification;
+  Map<String, bool> get preCheckStatus => _preCheckStatus;
+  String? get locationConfirmation => _locationConfirmation;
+  String? get serialConfirmation => _serialConfirmation;
+  List<MeasurementModel> get measurements => _measurements;
+  List<EvidencePhotoModel> get evidencePhotos => _evidencePhotos;
+  String? get resultStatus => _resultStatus;
+  String get findingsSummary => _findingsSummary;
+  String get remarks => _remarks;
+  bool get isCompliant => _isCompliant;
+  bool get certificateEligible => _certificateEligible;
+
+  Future<void> loadVerification(String assignmentId) async {
+    _verification = await _repository.getOrCreateVerification(assignmentId);
+    _measurements = await _repository.listMeasurements(_verification!.id);
+    _evidencePhotos = _verification!.evidencePhotos;
+
+    // Load existing outcome data if available
+    _resultStatus = _verification?.resultStatus;
+    _findingsSummary = _verification?.findingsSummary ?? '';
+    _remarks = _verification?.remarks ?? '';
+    _isCompliant = _verification?.isCompliant ?? false;
+    _certificateEligible = _verification?.certificateEligible ?? false;
+
+    notifyListeners();
+  }
+
+  void updatePreCheck(String key, bool value) {
+    _preCheckStatus[key] = value;
+    notifyListeners();
+  }
+
+  void updateLocationConfirmation(String value) {
+    _locationConfirmation = value;
+    notifyListeners();
+  }
+
+  void updateSerialConfirmation(String value) {
+    _serialConfirmation = value;
+    notifyListeners();
+  }
+
+  bool isPreCheckComplete() {
+    final requiredKeys = ['visual_condition', 'seal_condition', 'standard_confirmation'];
+    if (_locationConfirmation == null || _serialConfirmation == null) return false;
+    for (var key in requiredKeys) {
+      if (_preCheckStatus[key] != true) return false;
+    }
+    return true;
+  }
+
+  Future<void> addMeasurement(Map<String, dynamic> data) async {
+    if (_verification == null) return;
+    final measurement = await _repository.addMeasurement(_verification!.id, data);
+    _measurements.add(measurement);
+    notifyListeners();
+  }
+
+  void removeMeasurement(int index) {
+    _measurements.removeAt(index);
+    notifyListeners();
+  }
+
+  Future<void> uploadEvidence({
+    required String filePath,
+    required String category,
+    String? caption,
+    bool isPrimary = false,
+  }) async {
+    if (_verification == null) return;
+    final photo = await _repository.addEvidence(
+      _verification!.id,
+      filePath: filePath,
+      category: category,
+      caption: caption,
+      isPrimary: isPrimary,
+    );
+    _evidencePhotos.add(photo);
+    notifyListeners();
+  }
+
+  // Outcome State Updates
+  void updateResultStatus(String status) {
+    _resultStatus = status;
+    notifyListeners();
+  }
+
+  void updateFindings(String findings) {
+    _findingsSummary = findings;
+    notifyListeners();
+  }
+
+  void updateRemarks(String remarks) {
+    _remarks = remarks;
+    notifyListeners();
+  }
+
+  void updateCompliance(bool value) {
+    _isCompliant = value;
+    notifyListeners();
+  }
+
+  void updateCertificateEligibility(bool value) {
+    _certificateEligible = value;
+    notifyListeners();
+  }
+
+  bool isOutcomeComplete() {
+    return _resultStatus != null;
+  }
+}

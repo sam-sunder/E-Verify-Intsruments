@@ -1,0 +1,1 @@
+export function StatusBadge({ value, tone = "neutral" }: { value: string; tone?: "neutral" | "success" | "warning" | "danger" | "info" }) { return <span className={`status-badge status-${tone}`}>{value.replaceAll("_", " ")}</span>; }

@@ -1,0 +1,520 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url = "file:.././dev.db"
+}
+
+enum UserRole {
+  BUSINESS_OWNER
+  OFFICER
+  ADMINISTRATOR
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum InstrumentStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  SUSPENDED
+  REVOKED
+  ARCHIVED
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  ASSIGNED
+  VERIFIED
+  REJECTED
+  CERTIFICATE_ISSUED
+  CANCELLED
+  REVERIFICATION_REQUESTED
+}
+
+enum ApplicationType {
+  INITIAL_VERIFICATION
+  RE_VERIFICATION
+  REPLACEMENT_REQUEST
+  COMPLIANCE_REVIEW
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum VerificationStatus {
+  PASS
+  FAIL
+  CONDITIONAL
+  REVERIFICATION_REQUIRED
+  REJECTED
+  NOT_ELIGIBLE
+}
+
+enum CertificateStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  SUSPENDED
+  REPLACED
+  VOID
+}
+
+enum ComplianceStatus {
+  COMPLIANT
+  WARNING
+  NON_COMPLIANT
+  REVERIFICATION_REQUIRED
+  SUSPENDED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum EnforcementStatus {
+  OPEN
+  UNDER_REVIEW
+  ACTION_TAKEN
+  RESOLVED
+  CLOSED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+}
+
+enum AuditActionType {
+  CREATED
+  UPDATED
+  DELETED
+  APPROVED
+  REJECTED
+  ASSIGNED
+  VERIFIED
+  CERTIFICATE_ISSUED
+  REVOKED
+  EXPIRED
+  REPLACED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  role         UserRole
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  lastLoginAt  DateTime?
+
+  instruments                 Instrument[]                 @relation("CurrentInstrumentOwner")
+  submittedApplications       VerificationApplication[]    @relation("SubmittedApplications")
+  reviewedApplications        VerificationApplication[]    @relation("ReviewedApplications")
+  assignedAssignments         OfficerAssignment[]          @relation("AssignedOfficer")
+  verifiedFieldChecks         FieldVerification[]          @relation("VerifiedByUser")
+  issuedCertificates          DigitalCertificate[]         @relation("IssuedCertificates")
+  startedCertificateHistory   CertificateStatusHistory[]   @relation("CertificateHistoryActor")
+  notifications               Notification[]               @relation("NotificationRecipient")
+  auditLogs                   AuditLog[]                   @relation("AuditActor")
+  initiatedEnforcementRecords EnforcementRecord[]          @relation("EnforcementInitiatedBy")
+  newOwnershipHistory         InstrumentOwnershipHistory[] @relation("NewOwnerHistory")
+  previousOwnershipHistory    InstrumentOwnershipHistory[] @relation("PreviousOwnerHistory")
+  approvedOwnershipHistory    InstrumentOwnershipHistory[] @relation("OwnershipApprovalHistory")
+  approvedLocationHistory     InstrumentLocationHistory[]  @relation("LocationApprovalHistory")
+
+  @@index([role, status])
+  @@index([email])
+}
+
+model Instrument {
+  id                  String           @id @default(cuid())
+  digitalInstrumentId String           @unique
+  instrumentType      String
+  category            String
+  manufacturer        String?
+  model               String?
+  serialNumber        String           @unique
+  registrationNumber  String?
+  capacity            String?
+  unitOfMeasure       String?
+  currentOwnerId      String
+  currentOwner        User             @relation("CurrentInstrumentOwner", fields: [currentOwnerId], references: [id], onDelete: Restrict)
+  currentLocation     String?
+  status              InstrumentStatus @default(ACTIVE)
+  isActive            Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  registeredAt        DateTime         @default(now())
+  lastVerifiedAt      DateTime?
+  nextDueDate         DateTime?
+  remarks             String?
+
+  applications       VerificationApplication[]
+  assignments        OfficerAssignment[]
+  fieldVerifications FieldVerification[]
+  certificates       DigitalCertificate[]
+  complianceRecords  ComplianceRecord[]
+  enforcementRecords EnforcementRecord[]
+  ownershipHistory   InstrumentOwnershipHistory[]
+  locationHistory    InstrumentLocationHistory[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+
+  @@index([currentOwnerId])
+  @@index([status])
+  @@index([instrumentType])
+  @@index([currentLocation])
+  @@index([nextDueDate])
+  @@index([registeredAt])
+}
+
+model VerificationApplication {
+  id                String            @id @default(cuid())
+  applicationNumber String            @unique
+  instrumentId      String
+  instrument        Instrument        @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  submittedByUserId String
+  submittedBy       User              @relation("SubmittedApplications", fields: [submittedByUserId], references: [id], onDelete: Restrict)
+  reviewedByUserId  String?
+  reviewedBy        User?             @relation("ReviewedApplications", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  applicationType   ApplicationType   @default(INITIAL_VERIFICATION)
+  status            ApplicationStatus @default(DRAFT)
+  submittedAt       DateTime          @default(now())
+  reviewedAt        DateTime?
+  dueDate           DateTime?
+  remarks           String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  assignments        OfficerAssignment[]
+  fieldVerifications FieldVerification[]
+  certificates       DigitalCertificate[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+
+  @@index([instrumentId])
+  @@index([submittedByUserId])
+  @@index([status])
+  @@index([applicationType])
+  @@index([applicationNumber])
+}
+
+model OfficerAssignment {
+  id                String                  @id @default(cuid())
+  applicationId     String
+  application       VerificationApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  instrumentId      String
+  instrument        Instrument              @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  assignedOfficerId String
+  assignedOfficer   User                    @relation("AssignedOfficer", fields: [assignedOfficerId], references: [id], onDelete: Restrict)
+  status            AssignmentStatus        @default(ASSIGNED)
+  assignedAt        DateTime                @default(now())
+  acceptedAt        DateTime?
+  dueDate           DateTime?
+  completedAt       DateTime?
+  notes             String?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  fieldVerification FieldVerification?
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+
+  @@index([applicationId])
+  @@index([instrumentId])
+  @@index([assignedOfficerId])
+  @@index([status])
+}
+
+model FieldVerification {
+  id                  String                  @id @default(cuid())
+  assignmentId        String                  @unique
+  assignment          OfficerAssignment       @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+  applicationId       String
+  application         VerificationApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  instrumentId        String
+  instrument          Instrument              @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  verifiedByUserId    String
+  verifiedBy          User                    @relation("VerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: Restrict)
+  verificationDate    DateTime                @default(now())
+  resultStatus        VerificationStatus
+  findingsSummary     String?
+  isCompliant         Boolean?
+  recommendedAction   String?
+  certificateEligible Boolean?                @default(false)
+  remarks             String?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  measurements   MeasurementRecord[]
+  evidencePhotos EvidencePhoto[]
+  certificate    DigitalCertificate?
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+
+  // preserve historical evidence and verification records when parent lifecycle records are archived or deactivated
+
+  @@index([assignmentId])
+  @@index([applicationId])
+  @@index([instrumentId])
+  @@index([verifiedByUserId])
+  @@index([resultStatus])
+}
+
+model MeasurementRecord {
+  id                String            @id @default(cuid())
+  verificationId    String
+  verification      FieldVerification @relation(fields: [verificationId], references: [id], onDelete: Restrict)
+  instrumentId      String
+  measurementType   String
+  parameterName     String
+  standardValue     String?
+  measuredValue     String
+  unit              String?
+  tolerance         String?
+  calculatedError   String?
+  standardReference String?
+  passFail          Boolean
+  recordedAt        DateTime          @default(now())
+  createdAt         DateTime          @default(now())
+
+  @@index([verificationId])
+  @@index([instrumentId])
+  @@index([measurementType])
+  @@index([recordedAt])
+}
+
+model EvidencePhoto {
+  id                String            @id @default(cuid())
+  verificationId    String
+  verification      FieldVerification @relation(fields: [verificationId], references: [id], onDelete: Restrict)
+  instrumentId      String
+  fileUrl           String
+  storageKey        String?
+  photoType         String
+  caption           String?
+  capturedAt        DateTime          @default(now())
+  isPrimaryEvidence Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+
+  @@index([verificationId])
+  @@index([instrumentId])
+  @@index([photoType])
+  @@index([capturedAt])
+}
+
+model DigitalCertificate {
+  id                         String                  @id @default(cuid())
+  certificateNumber          String                  @unique
+  instrumentId               String
+  instrument                 Instrument              @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  applicationId              String
+  application                VerificationApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  verificationId             String                  @unique
+  verification               FieldVerification       @relation(fields: [verificationId], references: [id], onDelete: Restrict)
+  issuedByUserId             String
+  issuedBy                   User                    @relation("IssuedCertificates", fields: [issuedByUserId], references: [id], onDelete: Restrict)
+  issuedAt                   DateTime                @default(now())
+  validFrom                  DateTime                @default(now())
+  validTo                    DateTime
+  status                     CertificateStatus       @default(ACTIVE)
+  qrCodeToken                String                  @unique
+  documentHash               String?
+  replacementOfCertificateId String?
+  replacementOf              DigitalCertificate?     @relation("CertificateReplacement", fields: [replacementOfCertificateId], references: [id], onDelete: SetNull)
+  replacementCertificates    DigitalCertificate[]    @relation("CertificateReplacement")
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+  revokedAt                  DateTime?
+  revocationReason           String?
+
+  statusHistory CertificateStatusHistory[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+
+  @@index([instrumentId])
+  @@index([applicationId])
+  @@index([issuedByUserId])
+  @@index([status])
+  @@index([validTo])
+  @@index([certificateNumber])
+}
+
+model CertificateStatusHistory {
+  id              String             @id @default(cuid())
+  certificateId   String
+  certificate     DigitalCertificate @relation(fields: [certificateId], references: [id], onDelete: Restrict)
+  previousStatus  CertificateStatus?
+  newStatus       CertificateStatus
+  changedByUserId String?
+  changedBy       User?              @relation("CertificateHistoryActor", fields: [changedByUserId], references: [id], onDelete: SetNull)
+  effectiveAt     DateTime           @default(now())
+  reason          String?
+  notes           String?
+  createdAt       DateTime           @default(now())
+
+  @@index([certificateId])
+  @@index([newStatus])
+  @@index([effectiveAt])
+}
+
+model ComplianceRecord {
+  id                String           @id @default(cuid())
+  instrumentId      String
+  instrument        Instrument       @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  assessmentDate    DateTime         @default(now())
+  complianceStatus  ComplianceStatus
+  riskScore         Int?
+  riskLevel         RiskLevel?
+  summary           String
+  recommendedAction String?
+  createdAt         DateTime         @default(now())
+
+  @@index([instrumentId])
+  @@index([complianceStatus])
+  @@index([riskLevel])
+  @@index([assessmentDate])
+}
+
+model EnforcementRecord {
+  id                String            @id @default(cuid())
+  instrumentId      String
+  instrument        Instrument        @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  caseNumber        String            @unique
+  caseType          String
+  severity          String?
+  initiatedByUserId String
+  initiatedBy       User              @relation("EnforcementInitiatedBy", fields: [initiatedByUserId], references: [id], onDelete: Restrict)
+  initiatedAt       DateTime          @default(now())
+  reason            String
+  actionTaken       String?
+  status            EnforcementStatus @default(OPEN)
+  resolvedAt        DateTime?
+  createdAt         DateTime          @default(now())
+
+  @@index([instrumentId])
+  @@index([status])
+  @@index([initiatedAt])
+  @@index([initiatedByUserId])
+}
+
+model Notification {
+  id              String                   @id @default(cuid())
+  recipientUserId String
+  recipient       User                     @relation("NotificationRecipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
+  instrumentId    String?
+  instrument      Instrument?              @relation(fields: [instrumentId], references: [id], onDelete: SetNull)
+  applicationId   String?
+  application     VerificationApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  assignmentId    String?
+  assignment      OfficerAssignment?       @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  verificationId  String?
+  verification    FieldVerification?       @relation(fields: [verificationId], references: [id], onDelete: SetNull)
+  certificateId   String?
+  certificate     DigitalCertificate?      @relation(fields: [certificateId], references: [id], onDelete: SetNull)
+  type            String
+  title           String
+  message         String
+  channel         NotificationChannel      @default(IN_APP)
+  isRead          Boolean                  @default(false)
+  createdAt       DateTime                 @default(now())
+  readAt          DateTime?
+
+  @@index([recipientUserId])
+  @@index([instrumentId])
+  @@index([applicationId])
+  @@index([assignmentId])
+  @@index([verificationId])
+  @@index([certificateId])
+  @@index([isRead])
+}
+
+model AuditLog {
+  id             String                   @id @default(cuid())
+  actorUserId    String?
+  actor          User?                    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  instrumentId   String?
+  instrument     Instrument?              @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  applicationId  String?
+  application    VerificationApplication? @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  assignmentId   String?
+  assignment     OfficerAssignment?       @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+  verificationId String?
+  verification   FieldVerification?       @relation(fields: [verificationId], references: [id], onDelete: Restrict)
+  certificateId  String?
+  certificate    DigitalCertificate?      @relation(fields: [certificateId], references: [id], onDelete: Restrict)
+  actionType     AuditActionType
+  oldValue       String?
+  newValue       String?
+  changedAt      DateTime                 @default(now())
+  notes          String?
+  correlationId  String?
+
+  @@index([actorUserId])
+  @@index([instrumentId])
+  @@index([applicationId])
+  @@index([assignmentId])
+  @@index([verificationId])
+  @@index([certificateId])
+  @@index([changedAt])
+}
+
+model InstrumentOwnershipHistory {
+  id               String     @id @default(cuid())
+  instrumentId     String
+  instrument       Instrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  previousOwnerId  String?
+  previousOwner    User?      @relation("PreviousOwnerHistory", fields: [previousOwnerId], references: [id], onDelete: SetNull)
+  newOwnerId       String?
+  newOwner         User?      @relation("NewOwnerHistory", fields: [newOwnerId], references: [id], onDelete: SetNull)
+  effectiveFrom    DateTime   @default(now())
+  effectiveTo      DateTime?
+  reason           String?
+  approvedByUserId String?
+  approvedBy       User?      @relation("OwnershipApprovalHistory", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  createdAt        DateTime   @default(now())
+
+  @@index([instrumentId])
+  @@index([previousOwnerId])
+  @@index([newOwnerId])
+  @@index([effectiveFrom])
+}
+
+model InstrumentLocationHistory {
+  id               String     @id @default(cuid())
+  instrumentId     String
+  instrument       Instrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  previousLocation String?
+  newLocation      String?
+  effectiveFrom    DateTime   @default(now())
+  effectiveTo      DateTime?
+  reason           String?
+  approvedByUserId String?
+  approvedBy       User?      @relation("LocationApprovalHistory", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  createdAt        DateTime   @default(now())
+
+  @@index([instrumentId])
+  @@index([effectiveFrom])
+  @@index([newLocation])
+}

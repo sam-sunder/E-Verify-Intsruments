@@ -1,0 +1,58 @@
+{
+  "name": "e-verify-intsruments",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/sam-sunder/E-Verify-Intsruments#readme",
+  "bugs": {
+    "url": "https://github.com/sam-sunder/E-Verify-Intsruments/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sam-sunder/E-Verify-Intsruments.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
+    "prisma": "^6.19.3",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.0"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@prisma/adapter-better-sqlite3": "^7.10.0",
+    "@prisma/adapter-libsql": "^7.10.0",
+    "@prisma/client": "^6.19.3",
+    "@prisma/studio": "^0.511.0",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "decimal.js": "^10.6.0",
+    "html2canvas": "^1.4.1",
+    "jose": "^6.2.12",
+    "jspdf": "^4.2.1",
+    "next": "^16.3.4",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.5.4"
+  },
+  "allowScripts": {
+    "@prisma/engines@6.19.3": true,
+    "prisma@6.19.3": true
+  }
+}

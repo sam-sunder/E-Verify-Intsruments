@@ -1,0 +1,5 @@
+import { CircleNotch, WarningCircle } from "@phosphor-icons/react/dist/ssr";
+
+export function LoadingState({ label = "Loading workspace" }: { label?: string }) { return <div className="empty-state" aria-live="polite"><div><div className="empty-state-icon"><CircleNotch size={22} aria-hidden="true" /></div><p>{label}</p></div></div>; }
+export function ErrorState({ message, action }: { message: string; action?: React.ReactNode }) { return <div className="error-state" role="alert"><strong><WarningCircle size={16} weight="bold" aria-hidden="true" /> {message}</strong>{action ? <div className="form-actions">{action}</div> : null}</div>; }
+export function EmptyState({ title, description }: { title: string; description: string }) { return <div className="empty-state"><div><div className="empty-state-icon" aria-hidden="true">—</div><h2>{title}</h2><p>{description}</p></div></div>; }
