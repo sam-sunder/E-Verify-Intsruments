@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/network/api_client.dart';
 import '../notifications/notification_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -58,37 +59,42 @@ class _NotificationScreenState extends State<NotificationScreen> {
         }
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to mark as read: ${e.toString()}')),
-      );
-    }
-  }
-
-  Future<void> _markAllRead() async {
-    try {
-      await _repository.markAllNotificationsRead();
-      setState(() {
-        for (var n in _notifications) {
-          // Local update
-        }
-      });
-      _loadNotifications();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to mark all as read: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to mark as read: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Notifications'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.secondary,
         actions: [
           TextButton(
-            onPressed: _markAllRead,
-            child: const Text('Mark all read', style: TextStyle(color: Colors.teal)),
+            onPressed: () async {
+              await _repository.markAllNotificationsRead();
+              setState(() {
+                for (var i = 0; i < _notifications.length; i++) {
+                  final n = _notifications[i];
+                  _notifications[i] = NotificationModel(
+                    id: n.id,
+                    type: n.type,
+                    title: n.title,
+                    message: n.message,
+                    channel: n.channel,
+                    isRead: true,
+                    createdAt: n.createdAt,
+                    readAt: DateTime.now().toIso8601String(),
+                    instrument: n.instrument,
+                    certificate: n.certificate,
+                  );
+                }
+              });
+            },
+            child: const Text('Mark all read', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -115,41 +121,91 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
 
     if (_notifications.isEmpty) {
-      return const Center(child: Text('No notifications.'));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            const Text('No notifications yet', style: TextStyle(fontSize: 16, color: Colors.grey)),
+          ],
+        ),
+      );
     }
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _notifications.length,
       itemBuilder: (context, index) {
-        final n = _notifications[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey.shade300),
-          ),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: n.isRead ? Colors.grey.shade200 : Colors.teal.shade100,
-              child: Icon(Icons.notifications, color: n.isRead ? Colors.grey : Colors.teal),
-            ),
-            title: Text(n.title, style: TextStyle(fontWeight: n.isRead ? FontWeight.normal : FontWeight.bold)),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(n.message),
-                Text(n.createdAt.substring(0, 10), style: const TextStyle(fontSize: 10)),
-              ],
-            ),
-            trailing: !n.isRead
-              ? IconButton(icon: const Icon(Icons.done), onPressed: () => _markAsRead(n.id))
-              : null,
-            onTap: () => _markAsRead(n.id),
-          ),
-        );
+        final notification = _notifications[index];
+        return _buildNotificationCard(notification);
       },
     );
+  }
+
+  Widget _buildNotificationCard(NotificationModel n) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: n.isRead ? Colors.grey.shade100 : AppColors.primary.withOpacity(0.1),
+          child: Icon(
+            _getNotificationIcon(n.type),
+            color: n.isRead ? Colors.grey : AppColors.primary,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          n.title,
+          style: TextStyle(
+            fontWeight: n.isRead ? FontWeight.normal : FontWeight.bold,
+            fontSize: 15,
+            color: AppColors.secondary,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(n.message, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+            const SizedBox(height: 8),
+            Text(
+              n.createdAt.substring(0, 10),
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
+            ),
+          ],
+        ),
+        trailing: !n.isRead
+            ? IconButton(
+                icon: const Icon(Icons.done_all, size: 18, color: Colors.grey),
+                onPressed: () => _markAsRead(n.id),
+              )
+            : null,
+        onTap: () => _markAsRead(n.id),
+      ),
+    );
+  }
+
+  IconData _getNotificationIcon(String type) {
+    switch (type) {
+      case 'ASSIGNMENT': return Icons.assignment;
+      case 'CERTIFICATE': return Icons.card_membership;
+      case 'INSTRUMENT': return Icons.settings_input_component;
+      case 'COMPLIANCE': return Icons.gavel;
+      default: return Icons.notifications;
+    }
   }
 }

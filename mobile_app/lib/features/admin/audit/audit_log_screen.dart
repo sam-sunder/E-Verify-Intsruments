@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/instruments/instrument_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/instruments/instrument_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class AuditLogScreen extends StatefulWidget {
   const AuditLogScreen({super.key});
@@ -92,7 +93,7 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
             side: BorderSide(color: Colors.grey.shade300),
           ),
           child: ListTile(
-            leading: const Icon(Icons.history, color: Colors.teal),
+            leading: const Icon(Icons.history, color: AppColors.primary),
             title: Text(log['actionType'] ?? 'System Event', style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

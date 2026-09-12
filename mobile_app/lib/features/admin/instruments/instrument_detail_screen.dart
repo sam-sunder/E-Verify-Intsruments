@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/instruments/instrument_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/instruments/instrument_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class InstrumentDetailScreen extends StatefulWidget {
   final String publicInstrumentId;
@@ -95,7 +96,7 @@ class _InstrumentDetailScreenState extends State<InstrumentDetailScreen> {
   List<Widget> _buildTimeline() {
     final List<Widget> items = [];
     for (var v in _history!.verifications) {
-      items.add(_buildTimelineItem(v.verificationDate, 'Verification: ${v.resultStatus}', Colors.teal));
+      items.add(_buildTimelineItem(v.verificationDate, 'Verification: ${v.resultStatus}', AppColors.primary));
     }
     for (var a in _history!.audit) {
       items.add(_buildTimelineItem(a.changedAt, '${a.actionType}: ${a.newValue ?? a.oldValue}', Colors.grey));
@@ -132,7 +133,7 @@ class _InstrumentDetailScreenState extends State<InstrumentDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),

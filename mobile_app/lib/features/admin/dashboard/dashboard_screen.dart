@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/instruments/instrument_repository.dart';
-import '../../features/applications/application_repository.dart';
-import '../../features/assignments/assignment_repository.dart';
-import '../../features/certificates/certificate_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/instruments/instrument_repository.dart';
+import '../../../features/applications/application_repository.dart';
+import '../../../features/assignments/assignment_repository.dart';
+import '../../../features/certificates/certificate_repository.dart';
 import '../applications/application_list_screen.dart';
 import '../assignments/assignment_list_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -105,14 +106,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           const Text(
             'System Overview',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           _buildStatsGrid(),
           const SizedBox(height: 32),
           const Text(
             'Requires Attention',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           _buildAttentionSection(),
@@ -130,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       crossAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
-        _buildStatCard('Instruments', _stats['total_instruments'] ?? 0, Icons.settings_input_component, Colors.teal),
+        _buildStatCard('Instruments', _stats['total_instruments'] ?? 0, Icons.settings_input_component, AppColors.primary),
         _buildStatCard('Active', _stats['active_instruments'] ?? 0, Icons.check_circle, Colors.green),
         _buildStatCard('Pending Apps', _stats['pending_apps'] ?? 0, Icons.assignment_late, Colors.orange),
         _buildStatCard('Active Assign', _stats['active_assignments'] ?? 0, Icons.people, Colors.blue),
@@ -187,7 +188,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         side: BorderSide(color: Colors.grey.shade300),
       ),
       child: ListTile(
-        leading: Icon(icon, color: Colors.teal),
+        leading: Icon(icon, color: AppColors.primary),
         title: Text(title),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

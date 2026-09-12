@@ -8,8 +8,9 @@ import 'instruments/instrument_list_screen.dart';
 import 'users/user_list_screen.dart';
 import 'compliance/compliance_screen.dart';
 import 'audit/audit_log_screen.dart';
-import 'notifications/notification_screen.dart';
-import 'profile/profile_screen.dart';
+import '../notifications/notification_screen.dart';
+import '../profile/profile_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
@@ -37,7 +38,7 @@ class _AdminShellState extends State<AdminShell> {
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.teal,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Home'),
@@ -80,7 +81,7 @@ class MoreMenuScreen extends StatelessWidget {
         side: BorderSide(color: Colors.grey.shade300),
       ),
       child: ListTile(
-        leading: Icon(icon, color: Colors.teal),
+        leading: Icon(icon, color: AppColors.primary),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         trailing: const Icon(Icons.chevron_right),
         onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => destination)),

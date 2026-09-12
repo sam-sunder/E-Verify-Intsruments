@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/applications/application_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/applications/application_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class ApplicationDetailScreen extends StatefulWidget {
   final String applicationNumber;
@@ -132,7 +133,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),
@@ -169,7 +170,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
     final List<Widget> buttons = [];
 
     if (status == 'SUBMITTED') {
-      buttons.add(_buildButton('Start Review', Colors.teal, () => _handleAction(() => _repository.startReview(widget.applicationNumber), 'Review started')));
+      buttons.add(_buildButton('Start Review', AppColors.primary, () => _handleAction(() => _repository.startReview(widget.applicationNumber), 'Review started')));
     } else if (status == 'UNDER_REVIEW') {
       buttons.add(_buildButton('Approve Application', Colors.green, () => _handleAction(() => _repository.approveApplication(widget.applicationNumber), 'Approved')));
       buttons.add(_buildButton('Reject Application', Colors.red, () => _promptReason('Reject', (reason) => _handleAction(() => _repository.rejectApplication(widget.applicationNumber, reason), 'Rejected'))));

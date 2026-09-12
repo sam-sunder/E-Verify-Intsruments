@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
+import '../../../core/network/api_client.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class UserListScreen extends StatefulWidget {
   const UserListScreen({super.key});
@@ -155,7 +156,7 @@ class _UserListScreenState extends State<UserListScreen> {
             trailing: Switch(
               value: isActive,
               onChanged: (val) => _toggleUserStatus(user['id'], val),
-              activeThumbColor: Colors.teal,
+              activeThumbColor: AppColors.primary,
             ),
           ),
         );

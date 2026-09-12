@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../field_verification_provider.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class PreCheckStep extends StatefulWidget {
   const PreCheckStep({super.key});
@@ -39,7 +40,7 @@ class _PreCheckStepState extends State<PreCheckStep> {
         children: [
           const Text(
             'Field Pre-check',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           const Text('Verify the following before starting measurements'),
@@ -88,7 +89,7 @@ class _PreCheckStepState extends State<PreCheckStep> {
       subtitle: Text(subtitle),
       value: provider.preCheckStatus[key] ?? false,
       onChanged: (val) => provider.updatePreCheck(key, val ?? false),
-      activeColor: Colors.teal,
+      activeColor: AppColors.primary,
       controlAffinity: ListTileControlAffinity.leading,
       contentPadding: EdgeInsets.zero,
     );

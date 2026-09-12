@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/applications/application_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/applications/application_repository.dart';
 import 'application_detail_screen.dart';
 
 class ApplicationListScreen extends StatefulWidget {

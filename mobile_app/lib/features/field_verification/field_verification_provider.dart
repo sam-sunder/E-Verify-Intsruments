@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'field_verification_repository.dart';
+import '../assignments/assignment_repository.dart';
 
 class FieldVerificationProvider extends ChangeNotifier {
   final FieldVerificationRepository _verificationRepo;
@@ -89,7 +90,7 @@ class FieldVerificationProvider extends ChangeNotifier {
 
   Future<void> addMeasurement(Map<String, dynamic> data) async {
     if (_isFinalized || _verification == null) return;
-    final measurement = await _repository.addMeasurement(_verification!.id, data);
+    final measurement = await _verificationRepo.addMeasurement(_verification!.id, data);
     _measurements.add(measurement);
     notifyListeners();
   }
@@ -107,7 +108,7 @@ class FieldVerificationProvider extends ChangeNotifier {
     bool isPrimary = false,
   }) async {
     if (_isFinalized || _verification == null) return;
-    final photo = await _repository.addEvidence(
+    final photo = await _verificationRepo.addEvidence(
       _verification!.id,
       filePath: filePath,
       category: category,
@@ -156,7 +157,7 @@ class FieldVerificationProvider extends ChangeNotifier {
   Future<void> submitVerification() async {
     if (_verification == null) throw Exception("No active verification found");
 
-    await _repository.submitVerification(_verification!.id, {
+    await _verificationRepo.submitVerification(_verification!.id, {
       'resultStatus': _resultStatus,
       'findingsSummary': _findingsSummary,
       'isCompliant': _isCompliant,

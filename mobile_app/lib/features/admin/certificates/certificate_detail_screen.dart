@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../core/network/api_client.dart';
-import '../../features/certificates/certificate_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/certificates/certificate_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class CertificateDetailScreen extends StatefulWidget {
   final String certificateNumber;
@@ -53,7 +54,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: controller,
-              decoration: const InputDecoration(labelText: 'Reason for $action'),
+              decoration: InputDecoration(labelText: 'Reason for $action'),
               maxLines: 3,
             ),
           ],
@@ -91,7 +92,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
       );
       await _loadCertificate();
     } catch (e) {
-      ScHaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Action failed: ${e.toString()}')),
       );
     } finally {
@@ -200,7 +201,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),

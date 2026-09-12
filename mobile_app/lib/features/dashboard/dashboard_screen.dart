@@ -7,6 +7,8 @@ import '../field_verification/field_verification_screen.dart';
 import '../field_verification/field_verification_provider.dart';
 import '../field_verification/field_verification_repository.dart';
 import '../../core/network/api_client.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
+import '../notifications/notification_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -53,12 +55,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final user = context.watch<AuthService>().currentUser;
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Officer Dashboard'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.secondary,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => context.read<AuthService>().logout(),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.account_circle),
+            onSelected: (value) {
+              if (value == 'logout') {
+                context.read<AuthService>().logout();
+              } else if (value == 'profile') {
+                // Navigate to Profile (if implemented)
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    Icon(Icons.person, size: 20),
+                    SizedBox(width: 8),
+                    Text('My Profile'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Logout', style: TextStyle(color: Colors.red)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -93,80 +127,112 @@ class _DashboardScreenState extends State<DashboardScreen> {
             'Welcome, ${user?.fullName ?? "Officer"}',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.teal.shade900,
+                  color: AppColors.secondary,
                 ),
           ),
-          const SizedBox(height: 24),
-          _buildStatsGrid(),
+          const Text(
+            'Here is what is happening with your assignments today.',
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+          const SizedBox(height: 32),
+          const Text('Your Overview', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          _buildStatsCarousel(),
           const SizedBox(height: 32),
           const Text('Quick Actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          _buildActionGrid(),
+          _buildActionList(),
         ],
       ),
     );
   }
 
-  Widget _buildStatsGrid() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 1.5,
-      children: [
-        _buildStatCard('Pending', _stats['PENDING'] ?? 0, Colors.orange),
-        _buildStatCard('Accepted', _stats['ACCEPTED'] ?? 0, Colors.blue),
-        _buildStatCard('In-Progress', _stats['IN_PROGRESS'] ?? 0, Colors.teal),
-        _buildStatCard('Completed', _stats['COMPLETED'] ?? 0, Colors.green),
-      ],
-    );
-  }
+  Widget _buildStatsCarousel() {
+    final statList = [
+      {'label': 'Pending', 'value': _stats['PENDING'] ?? 0, 'color': Colors.orange},
+      {'label': 'Accepted', 'value': _stats['ACCEPTED'] ?? 0, 'color': Colors.blue},
+      {'label': 'In-Progress', 'value': _stats['IN_PROGRESS'] ?? 0, 'color': AppColors.primary},
+      {'label': 'Completed', 'value': _stats['COMPLETED'] ?? 0, 'color': Colors.green},
+    ];
 
-  Widget _buildStatCard(String label, int value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+    return SizedBox(
+      height: 120,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: statList.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          final stat = statList[index];
+          return Container(
+            width: 140,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  stat['value'].toString(),
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: stat['color'] as Color,
+                  ),
+                ),
+                Text(
+                  stat['label'] as String,
+                  style: const TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          );
+        },
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(value.toString(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-        ],
-      ),
     );
   }
 
-  Widget _buildActionGrid() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 1.2,
-      children: [
-        _buildActionCard(context, 'My Assignments', Icons.assignment, Colors.teal),
-        _buildActionCard(context, 'Notifications', Icons.notifications, Colors.orange),
-        if (_inProgressAssignment != null)
-          _buildActionCard(context, 'Continue Verification', Icons.play_circle_fill, Colors.green),
-      ],
+  Widget _buildActionList() {
+    final actions = [
+      {'title': 'My Assignments', 'icon': Icons.assignment, 'color': AppColors.primary},
+      {'title': 'Notifications', 'icon': Icons.notifications, 'color': Colors.orange},
+      if (_inProgressAssignment != null)
+        {'title': 'Continue Verification', 'icon': Icons.play_circle_fill, 'color': Colors.green},
+    ];
+
+    return Column(
+      children: actions.map((action) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _buildActionCard(
+            action['title'] as String,
+            action['icon'] as IconData,
+            action['color'] as Color,
+          ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildActionCard(BuildContext context, String title, IconData icon, Color color) {
+  Widget _buildActionCard(String title, IconData icon, Color color) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.shade200),
       ),
       child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
           if (title == 'My Assignments') {
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AssignmentsScreen()));
@@ -176,22 +242,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 builder: (_) => ChangeNotifierProvider(
                   create: (context) => FieldVerificationProvider(
                     FieldVerificationRepository(context.read<ApiClient>()),
+                    AssignmentRepository(context.read<ApiClient>()),
                   ),
                   child: FieldVerificationScreen(assignmentId: _inProgressAssignment!.id),
                 ),
               ),
             );
           } else if (title == 'Notifications') {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifications coming soon')));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationScreen()));
           }
         },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: color),
-            const SizedBox(height: 8),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 28, color: color),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.grey),
+            ],
+          ),
         ),
       ),
     );

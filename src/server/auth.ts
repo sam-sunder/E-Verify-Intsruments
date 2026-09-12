@@ -46,9 +46,10 @@ export async function currentRefreshPrincipal() {
 }
 
 export function setAuthCookies(response: Response, tokens: { accessToken: string; refreshToken: string }) {
-  const secure = process.env.NODE_ENV === "production";
-  response.headers.append("Set-Cookie", `${accessCookie}=${tokens.accessToken}; Path=/; HttpOnly; SameSite=Lax; Max-Age=900${secure ? "; Secure" : ""}`);
-  response.headers.append("Set-Cookie", `${refreshCookie}=${tokens.refreshToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=2592000${secure ? "; Secure" : ""}`);
+  // For cross-origin cookies, SameSite=None and Secure=true are required
+  const cookieOptions = "Path=/; HttpOnly; SameSite=None; Secure";
+  response.headers.append("Set-Cookie", `${accessCookie}=${tokens.accessToken}; ${cookieOptions}; Max-Age=900`);
+  response.headers.append("Set-Cookie", `${refreshCookie}=${tokens.refreshToken}; ${cookieOptions}; Max-Age=2592000`);
   return response;
 }
 

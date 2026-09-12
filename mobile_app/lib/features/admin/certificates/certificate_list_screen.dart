@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/certificates/certificate_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/certificates/certificate_repository.dart';
 import 'certificate_detail_screen.dart';
 
 class CertificateListScreen extends StatefulWidget {

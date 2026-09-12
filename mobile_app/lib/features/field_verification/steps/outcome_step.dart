@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../field_verification_provider.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class OutcomeStep extends StatefulWidget {
   const OutcomeStep({super.key});
@@ -48,7 +49,7 @@ class _OutcomeStepState extends State<OutcomeStep> {
         children: [
           const Text(
             'Verification Outcome',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           const Text('Define the final result of this field verification'),
@@ -94,10 +95,10 @@ class _OutcomeStepState extends State<OutcomeStep> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected ? Colors.teal.shade50 : Colors.white,
+                    color: isSelected ? AppColors.neutral : Colors.white,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: isSelected ? Colors.teal : Colors.grey.shade300,
+                      color: isSelected ? AppColors.primary : Colors.grey.shade300,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -105,7 +106,7 @@ class _OutcomeStepState extends State<OutcomeStep> {
                     children: [
                       Icon(
                         isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                        color: isSelected ? Colors.teal : Colors.grey,
+                        color: isSelected ? AppColors.primary : Colors.grey,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -155,7 +156,7 @@ class _OutcomeStepState extends State<OutcomeStep> {
       subtitle: const Text('Statutory compliance confirmation'),
       value: provider.isCompliant,
       onChanged: (val) => provider.updateCompliance(val ?? false),
-      activeColor: Colors.teal,
+      activeColor: AppColors.primary,
       controlAffinity: ListTileControlAffinity.leading,
       contentPadding: EdgeInsets.zero,
     );
@@ -167,7 +168,7 @@ class _OutcomeStepState extends State<OutcomeStep> {
       subtitle: const Text('Officer assessment of eligibility'),
       value: provider.certificateEligible,
       onChanged: (val) => provider.updateCertificateEligibility(val ?? false),
-      activeColor: Colors.teal,
+      activeColor: AppColors.primary,
       controlAffinity: ListTileControlAffinity.leading,
       contentPadding: EdgeInsets.zero,
     );

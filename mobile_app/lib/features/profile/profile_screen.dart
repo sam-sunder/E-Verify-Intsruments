@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/auth/auth_service.dart';
 import '../../core/network/api_client.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -84,8 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.teal.shade100,
-                    child: Icon(Icons.person, size: 50, color: Colors.teal.shade900),
+                    backgroundColor: AppColors.primary60,
+                    child: Icon(Icons.person, size: 50, color: AppColors.secondary),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -114,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() => _isEditing = !_isEditing);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isEditing ? Colors.grey : Colors.teal,
+                  backgroundColor: _isEditing ? Colors.grey : AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -144,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),

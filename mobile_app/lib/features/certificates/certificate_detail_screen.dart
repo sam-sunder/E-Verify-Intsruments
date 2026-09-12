@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../core/network/api_client.dart';
 import 'certificate_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class CertificateDetailScreen extends StatefulWidget {
   final String certificateNumber;
@@ -114,7 +115,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.teal,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
               child: const Text('Download Certificate'),
@@ -129,7 +130,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),

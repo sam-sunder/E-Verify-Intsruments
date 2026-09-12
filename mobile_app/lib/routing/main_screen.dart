@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/assignments/assignments_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -25,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
-        selectedItemColor: Colors.teal,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),

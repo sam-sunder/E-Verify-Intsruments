@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../field_verification_provider.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class MeasurementsStep extends StatefulWidget {
   const MeasurementsStep({super.key});
@@ -43,7 +44,7 @@ class _MeasurementsStepState extends State<MeasurementsStep> {
         children: [
           const Text(
             'Instrument Measurements',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           const Text('Enter precise values as measured in the field'),
@@ -172,6 +173,7 @@ class _MeasurementsStepState extends State<MeasurementsStep> {
     }
 
     try {
+      final provider = context.read<FieldVerificationProvider>();
       await provider.addMeasurement({
         'measurementType': _selectedType,
         'parameterName': 'Primary',

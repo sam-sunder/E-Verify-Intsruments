@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/assignments/assignment_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/assignments/assignment_repository.dart';
 import 'assignment_detail_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class AssignmentListScreen extends StatefulWidget {
   const AssignmentListScreen({super.key});
@@ -53,7 +54,7 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateAssignmentDialog(),
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

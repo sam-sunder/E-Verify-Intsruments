@@ -18,7 +18,11 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<ApiClient>.value(value: apiClient),
+        Provider<ApiClient>.value(
+          value: apiClient..onUnauthorized = () {
+            // This is a fallback, but the main logic is now in AuthService
+          },
+        ),
         Provider<SecureStorage>.value(value: secureStorage),
         ChangeNotifierProvider<AuthService>.value(value: authService),
       ],

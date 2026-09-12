@@ -7,3 +7,5 @@ node_modules/
 .agent/
 .agents/
 storage/
+.devcontainer/devcontainer.json
+tsconfig.tsbuildinfo

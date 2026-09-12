@@ -1,4 +1,5 @@
 import '../network/api_client.dart';
+// Removed import of ApiClient to avoid circular dependency if ApiClient uses ApiException
 
 class ApiException implements Exception {
   final ApiError error;
@@ -8,18 +9,10 @@ class ApiException implements Exception {
   String toString() => "ApiException: [${error.code}] ${error.message}";
 }
 
-class UnauthorizedException implements Exception {
-  final String message;
-  UnauthorizedException(this.message);
-
-  @override
-  String toString() => "UnauthorizedException: $message";
+class UnauthorizedException extends ApiException {
+  UnauthorizedException(String message) : super(ApiError(code: 'UNAUTHORIZED', message: message));
 }
 
-class NetworkException implements Exception {
-  final String message;
-  NetworkException(this.message);
-
-  @override
-  String toString() => "NetworkException: $message";
+class NetworkException extends ApiException {
+  NetworkException(String message) : super(ApiError(code: 'NETWORK_ERROR', message: message));
 }

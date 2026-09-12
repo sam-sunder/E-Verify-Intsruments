@@ -5,6 +5,7 @@ import '../../core/network/api_client.dart';
 import '../field_verification/field_verification_screen.dart';
 import '../field_verification/field_verification_provider.dart';
 import '../field_verification/field_verification_repository.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class AssignmentDetailScreen extends StatefulWidget {
   final String assignmentId;
@@ -107,7 +108,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),

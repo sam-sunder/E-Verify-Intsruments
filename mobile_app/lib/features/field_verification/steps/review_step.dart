@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../field_verification_provider.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class ReviewStep extends StatefulWidget {
   const ReviewStep({super.key});
@@ -35,15 +36,15 @@ class _ReviewStepState extends State<ReviewStep> {
         children: [
           const Text(
             'Final Review',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           const Text('Please review all data before final submission'),
           const SizedBox(height: 24),
 
           _buildSection('Instrument', [
-            _buildRow('Serial Number', v.instrument?.serialNumber ?? '—'), // I need to make sure instrument is in the model
-            _buildRow('Application No', v.assignment?.application?.applicationNumber ?? '—'),
+            _buildRow('Serial Number', provider.assignment?.instrument.serialNumber ?? '—'),
+            _buildRow('Application No', provider.assignment?.application.applicationNumber ?? '—'),
           ]),
           const SizedBox(height: 24),
 
@@ -130,7 +131,7 @@ class _ReviewStepState extends State<ReviewStep> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),
@@ -212,7 +213,7 @@ class _ReviewStepState extends State<ReviewStep> {
         onPressed: _isSubmitting ? null : () => _confirmSubmit(context, provider),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.teal,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),
         child: _isSubmitting

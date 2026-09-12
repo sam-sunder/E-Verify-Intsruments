@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
+import '../../../core/network/api_client.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class ComplianceScreen extends StatefulWidget {
   const ComplianceScreen({super.key});
@@ -78,14 +79,14 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
         children: [
           const Text(
             'Compliance Summary',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           _buildStatsGrid(totals),
           const SizedBox(height: 32),
           const Text(
             'Compliance Breakdown',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           _buildComplianceList(totals),

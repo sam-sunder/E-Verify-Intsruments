@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/network/api_client.dart';
-import '../../features/instruments/instrument_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../features/instruments/instrument_repository.dart';
 import 'instrument_detail_screen.dart';
 
 class InstrumentListScreen extends StatefulWidget {

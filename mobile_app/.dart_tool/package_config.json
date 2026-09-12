@@ -63,7 +63,7 @@
     },
     {
       "name": "code_assets",
-      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/code_assets-2.0.0",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/code_assets-1.2.1",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },
@@ -72,6 +72,12 @@
       "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "cookie_jar",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/cookie_jar-4.0.9",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
     },
     {
       "name": "cross_file",
@@ -90,6 +96,24 @@
       "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.9",
       "packageUri": "lib/",
       "languageVersion": "3.9"
+    },
+    {
+      "name": "dio",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/dio-5.11.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "dio_cookie_manager",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/dio_cookie_manager-3.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "dio_web_adapter",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/dio_web_adapter-2.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "fake_async",
@@ -201,7 +225,7 @@
     },
     {
       "name": "hooks",
-      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/hooks-2.2.0",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/hooks-2.0.2",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },
@@ -339,7 +363,7 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/meta-1.19.0",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/meta-1.18.3",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -357,7 +381,7 @@
     },
     {
       "name": "objective_c",
-      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/objective_c-9.6.0",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/objective_c-9.5.0",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },
@@ -434,8 +458,20 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "qr",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/qr-3.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "qr_flutter",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/qr_flutter-4.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
       "name": "record_use",
-      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/record_use-1.1.1",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/record_use-0.6.0",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },
@@ -536,8 +572,14 @@
       "languageVersion": "3.5"
     },
     {
+      "name": "universal_io",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/universal_io-2.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
       "name": "vector_math",
-      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/vector_math-2.4.2",
+      "rootUri": "file:///home/codespace/.pub-cache/hosted/pub.dev/vector_math-2.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },

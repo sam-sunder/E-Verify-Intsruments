@@ -5,6 +5,7 @@ import 'steps/pre_check_step.dart';
 import 'steps/measurements_step.dart';
 import 'steps/evidence_step.dart';
 import 'steps/outcome_step.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class FieldVerificationScreen extends StatefulWidget {
   final String assignmentId;
@@ -78,7 +79,7 @@ class _FieldVerificationScreenState extends State<FieldVerificationScreen> {
               children: [
                 CircleAvatar(
                   radius: 12,
-                  backgroundColor: isCurrent ? Colors.teal : (isCompleted ? Colors.teal : Colors.grey.shade300),
+                  backgroundColor: isCurrent ? AppColors.primary : (isCompleted ? AppColors.primary : Colors.grey.shade300),
                   child: isCompleted
                     ? const Icon(Icons.check, size: 14, color: Colors.white)
                     : Text('${index + 1}', style: TextStyle(fontSize: 12, color: isCurrent ? Colors.white : Colors.black)),
@@ -89,7 +90,7 @@ class _FieldVerificationScreenState extends State<FieldVerificationScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                    color: isLocked ? Colors.grey : (isCurrent ? Colors.teal : Colors.black),
+                    color: isLocked ? Colors.grey : (isCurrent ? AppColors.primary : Colors.black),
                   ),
                 ),
               ],

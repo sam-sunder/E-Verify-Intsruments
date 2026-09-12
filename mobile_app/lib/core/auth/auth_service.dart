@@ -8,6 +8,8 @@ class UserProfile {
   final String fullName;
   final String role;
   final String status;
+  final String? phone;
+
 
   UserProfile({
     required this.id,
@@ -15,6 +17,7 @@ class UserProfile {
     required this.fullName,
     required this.role,
     required this.status,
+    this.phone,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -24,6 +27,7 @@ class UserProfile {
       fullName: json['fullName'],
       role: json['role'],
       status: json['status'],
+      phone: json['phone'],
     );
   }
 }
@@ -35,7 +39,10 @@ class AuthService extends ChangeNotifier {
   UserProfile? _currentUser;
   bool _isAuthenticated = false;
 
-  AuthService(this._apiClient, this._storage);
+  AuthService(this._apiClient, this._storage) {
+    _apiClient.onUnauthorized = logout;
+    _apiClient.tokenProvider = () async => await _storage.getAccessToken();
+  }
 
   UserProfile? get currentUser => _currentUser;
   bool get isAuthenticated => _isAuthenticated;
@@ -66,7 +73,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> logout() async {
     try {
-      await _apiClient.request('/auth/logout', method: 'POST');
+      await _apiClient.request(path: '/auth/logout', method: 'POST');
     } catch (_) {
       // Logout should succeed locally even if API call fails
     } finally {

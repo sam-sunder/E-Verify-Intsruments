@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import '../field_verification_provider.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class EvidenceStep extends StatefulWidget {
   const EvidenceStep({super.key});
@@ -95,7 +96,7 @@ class _EvidenceStepState extends State<EvidenceStep> {
         children: [
           const Text(
             'Evidence Capture',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           const Text('Capture official photos of the instrument'),
@@ -132,7 +133,7 @@ class _EvidenceStepState extends State<EvidenceStep> {
               onTap: _takePhoto,
               child: Column(
                 children: [
-                  const Icon(Icons.camera_alt, size: 64, color: Colors.teal),
+                  const Icon(Icons.camera_alt, size: 64, color: AppColors.primary),
                   const SizedBox(height: 16),
                   const Text(
                     'Capture Evidence',
@@ -181,7 +182,7 @@ class _EvidenceStepState extends State<EvidenceStep> {
             title: const Text('Mark as Primary Evidence'),
             value: _isPrimary,
             onChanged: (val) => setState(() => _isPrimary = val ?? false),
-            activeColor: Colors.teal,
+            activeColor: AppColors.primary,
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
           ),

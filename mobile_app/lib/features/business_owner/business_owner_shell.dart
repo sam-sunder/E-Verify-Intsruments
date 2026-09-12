@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../features/business_owner/dashboard/dashboard_screen.dart';
-import '../features/instruments/instrument_list_screen.dart';
-import '../features/applications/application_list_screen.dart';
-import '../features/certificates/certificate_list_screen.dart';
-import '../features/notifications/notification_screen.dart';
+import '../../features/business_owner/dashboard/dashboard_screen.dart';
+import '../../features/instruments/instrument_list_screen.dart';
+import '../../features/applications/application_list_screen.dart';
+import '../../features/certificates/certificate_list_screen.dart';
+import '../../features/notifications/notification_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class BusinessOwnerShell extends StatefulWidget {
   const BusinessOwnerShell({super.key});
@@ -32,7 +33,7 @@ class _BusinessOwnerShellState extends State<BusinessOwnerShell> {
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.teal,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Home'),

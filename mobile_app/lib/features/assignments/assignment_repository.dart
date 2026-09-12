@@ -1,4 +1,4 @@
-import '../core/network/api_client.dart';
+import '../../core/network/api_client.dart';
 
 class AssignmentModel {
   final String id;

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/network/api_client.dart';
 import 'instrument_repository.dart';
 import 'instrument_detail_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class InstrumentRegistrationScreen extends StatefulWidget {
   const InstrumentRegistrationScreen({super.key});
@@ -80,7 +81,7 @@ class _InstrumentRegistrationScreenState extends State<InstrumentRegistrationScr
             children: [
               const Text(
                 'Instrument Details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
               ),
               const SizedBox(height: 16),
               _buildField('Instrument Type', _typeController, true),
@@ -97,7 +98,7 @@ class _InstrumentRegistrationScreenState extends State<InstrumentRegistrationScr
                   onPressed: _isLoading ? null : _handleRegister,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.teal,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading
@@ -123,7 +124,7 @@ class _InstrumentRegistrationScreenState extends State<InstrumentRegistrationScr
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: 8),
-          TextField(
+          TextFormField(
             controller: controller,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

@@ -4,6 +4,7 @@ import '../../core/network/api_client.dart';
 import '../applications/application_repository.dart';
 import 'application_detail_screen.dart';
 import 'application_creation_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class ApplicationListScreen extends StatefulWidget {
   const ApplicationListScreen({super.key});
@@ -53,7 +54,7 @@ class _ApplicationListScreenState extends State<ApplicationListScreen> {
             MaterialPageRoute(builder: (_) => const ApplicationCreationScreen()),
           );
         },
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

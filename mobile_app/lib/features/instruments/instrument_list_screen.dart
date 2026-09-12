@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/network/api_client.dart';
+import '../../core/network/api_client.dart';
 import '../instruments/instrument_repository.dart';
 import 'instrument_registration_screen.dart';
 import 'instrument_detail_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class InstrumentListScreen extends StatefulWidget {
   const InstrumentListScreen({super.key});
@@ -75,7 +76,7 @@ class _InstrumentListScreenState extends State<InstrumentListScreen> {
             MaterialPageRoute(builder: (_) => const InstrumentRegistrationScreen()),
           );
         },
-        backgroundColor: Colors.teal,
+        backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

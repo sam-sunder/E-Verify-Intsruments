@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:flutter/foundation.dart';
 import '../config/env.dart';
 import '../errors/api_exception.dart';
 
@@ -30,10 +33,65 @@ class ApiError {
 }
 
 class ApiClient {
-  final http.Client _httpClient;
+  late final Dio _dio;
+  final CookieJar _cookieJar = CookieJar();
   String? _accessToken;
+  void Function()? onUnauthorized;
+  Future<String?> Function()? tokenProvider;
 
-  ApiClient({http.Client? httpClient}) : _httpClient = httpClient ?? http.Client();
+  ApiClient() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: Env.apiUrl,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        extra: {
+          'withCredentials': true,
+        },
+      ),
+    );
+
+    // Enable cookie management only for non-web platforms.
+    // Browsers handle cookies automatically; adding CookieManager on web can cause issues.
+    if (!kIsWeb) {
+      _dio.interceptors.add(CookieManager(_cookieJar));
+    }
+
+    // Add interceptor for Auth headers and 401 handling
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        String? token = _accessToken;
+        if (token == null && tokenProvider != null) {
+          token = await tokenProvider!();
+        }
+
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+      onError: (DioException e, handler) {
+        if (e.response?.statusCode == 401) {
+          // Avoid logout loop on logout request
+          final path = e.requestOptions.path;
+          if (path != null && !path.contains('/auth/logout')) {
+            onUnauthorized?.call();
+          }
+          return handler.next(
+            DioException(
+              requestOptions: e.requestOptions,
+              error: UnauthorizedException("Session expired. Please sign in again."),
+            ),
+          );
+        }
+        return handler.next(e);
+      },
+    ));
+  }
 
   void setAccessToken(String? token) {
     _accessToken = token;
@@ -45,112 +103,89 @@ class ApiClient {
     Map<String, String>? queryParams,
     Map<String, String>? headers,
     dynamic body,
-    T Function(dynamic) fromJson = _defaultFromJson,
+    T Function(dynamic)? fromJson,
   }) async {
-    var fullPath = path;
-    if (queryParams != null && queryParams.isNotEmpty) {
-      final query = queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&');
-      fullPath += '?$query';
-    }
-
-    final url = Uri.parse("${Env.apiUrl}$fullPath");
-
-    final requestHeaders = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...?headers,
-    };
-
-    if (_accessToken != null) {
-      requestHeaders['Authorization'] = 'Bearer $_accessToken';
-    }
-
     try {
-      final response = await _httpClient.request(
-        http.Request(method, url)
-          ..headers.addAll(requestHeaders)
-          ..body = body != null ? jsonEncode(body) : null,
-      ).timeout(const Duration(seconds: 30));
+      final response = await _dio.request(
+        path,
+        data: body,
+        queryParameters: queryParams,
+        options: Options(
+          method: method,
+          headers: headers,
+        ),
+      );
 
-      if (response.statusCode == 401) {
-        throw UnauthorizedException("Session expired. Please sign in again.");
-      }
+      final responseData = response.data;
 
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // Handle { "data": ... } format
-        final data = responseData is Map && responseData.containsKey('data')
-            ? responseData['data']
-            : responseData;
-        return fromJson(data);
+      if (responseData is Map && responseData.containsKey('data')) {
+        final data = responseData['data'];
+        return fromJson != null ? fromJson(data) : (data as T);
       } else {
-        // Handle { "error": { ... } } format
-        final errorData = responseData is Map && responseData.containsKey('error')
-            ? ApiError.fromJson(responseData['error'])
-            : ApiError(code: 'SERVER_ERROR', message: responseData.toString());
-        throw ApiException(errorData);
+        return fromJson != null ? fromJson(responseData) : (responseData as T);
       }
-    } on SocketException {
-      throw NetworkException("No internet connection. Please check your network.");
-    } on http.ClientException catch (e) {
-      throw NetworkException("Network request failed: ${e.message}");
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     } catch (e) {
-      if (e is ApiException || e is UnauthorizedException || e is NetworkException) {
-        rethrow;
-      }
       throw ApiException(ApiError(code: 'UNKNOWN', message: e.toString()));
     }
   }
-
-  T _defaultFromJson(dynamic json) => json as T;
 
   Future<T> multipartRequest<T>({
     required String path,
     required Map<String, String> fields,
     required Map<String, File> files,
-    T Function(dynamic) fromJson = _defaultFromJson,
+    T Function(dynamic)? fromJson,
   }) async {
-    final url = Uri.parse("${Env.apiUrl}$path");
-    final request = http.MultipartRequest('POST', url);
-
-    request.headers.addAll({
-      'Accept': 'application/json',
-    });
-
-    if (_accessToken != null) {
-      request.headers['Authorization'] = 'Bearer $_accessToken';
-    }
-
-    request.fields.addAll(fields);
-    for (var entry in files.entries) {
-      request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
-    }
-
     try {
-      final streamedResponse = await request.send().timeout(const Duration(seconds: 60));
-      final response = await http.Response.fromStream(streamedResponse);
+      final Map<String, dynamic> data = Map.from(fields);
+      for (var entry in files.entries) {
+        data[entry.key] = await MultipartFile.fromFile(entry.value.path);
+      }
+      final formData = FormData.fromMap(data);
 
-      final responseData = jsonDecode(response.body);
+      final response = await _dio.post(
+        path,
+        data: formData,
+      );
 
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final data = responseData is Map && responseData.containsKey('data')
-            ? responseData['data']
-            : responseData;
-        return fromJson(data);
+      final responseData = response.data;
+
+      if (responseData is Map && responseData.containsKey('data')) {
+        final data = responseData['data'];
+        return fromJson != null ? fromJson(data) : (data as T);
       } else {
-        final errorData = responseData is Map && responseData.containsKey('error')
-            ? ApiError.fromJson(responseData['error'])
-            : ApiError(code: 'SERVER_ERROR', message: responseData.toString());
-        throw ApiException(errorData);
+        return fromJson != null ? fromJson(responseData) : (responseData as T);
       }
-    } on SocketException {
-      throw NetworkException("No internet connection.");
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     } catch (e) {
-      if (e is ApiException || e is UnauthorizedException || e is NetworkException) {
-        rethrow;
-      }
       throw ApiException(ApiError(code: 'UNKNOWN', message: e.toString()));
     }
+  }
+
+  ApiException _handleDioError(DioException e) {
+    if (e.error is UnauthorizedException) {
+      return e.error as UnauthorizedException;
+    }
+
+    final response = e.response;
+    if (response != null) {
+      final responseData = response.data;
+      if (responseData is Map && responseData.containsKey('error')) {
+        return ApiException(ApiError.fromJson(responseData['error']));
+      }
+      return ApiException(ApiError(
+        code: 'SERVER_ERROR',
+        message: response.statusMessage ?? 'Unknown Error',
+        details: responseData,
+      ));
+    }
+
+    if (e.type == DioExceptionType.connectionError || e.type == DioExceptionType.connectionTimeout) {
+      return NetworkException("No internet connection. Please check your network.");
+    }
+
+    return ApiException(ApiError(code: 'UNKNOWN', message: e.message ?? 'Unknown Error'));
   }
 }

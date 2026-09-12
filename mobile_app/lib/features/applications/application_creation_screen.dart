@@ -4,6 +4,7 @@ import '../../core/network/api_client.dart';
 import 'application_repository.dart';
 import '../instruments/instrument_repository.dart';
 import 'application_detail_screen.dart';
+import 'package:e_verify_met_mobile/core/config/theme_colors.dart';
 
 class ApplicationCreationScreen extends StatefulWidget {
   final String? initialType;
@@ -96,7 +97,7 @@ class _ApplicationCreationScreenState extends State<ApplicationCreationScreen> {
             children: [
               const Text(
                 'Application Details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -139,7 +140,7 @@ class _ApplicationCreationScreenState extends State<ApplicationCreationScreen> {
                   onPressed: _isLoading ? null : _handleCreate,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.teal,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading
